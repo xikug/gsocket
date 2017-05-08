@@ -1,17 +1,17 @@
 package gsocket
 
 type TCPConnectHandler interface {
-	OnConnect()
+	OnConnect(session Session)
 }
 
 type TCPDisconnectHandler interface {
-	OnDisconnect()
+	OnDisconnect(session Session)
 }
 
 type TCPRecvHandler interface {
-	OnRecv()
+	OnRecv(session Session, data []byte)
 }
 
 type TCPErrorHandler interface {
-	OnError()
+	OnError(session Session, err error)
 }
