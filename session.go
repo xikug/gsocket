@@ -45,7 +45,7 @@ func (session *Session) recvThread(server *TCPServer) {
 
 		//session.RecvedPackets = append(session.RecvedPackets, buffer[:n]...)
 		if server.userHandler.handlerRecv != nil {
-			server.userHandler.handlerRecv.OnRecv(session, buffer[:n])
+			server.userHandler.OnRecv(session, buffer[:n])
 		}
 	}
 
