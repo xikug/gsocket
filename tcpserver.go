@@ -100,6 +100,11 @@ func (server *TCPServer) SetMaxConnection(maxCount int) {
 	server.connectionMax = maxCount
 }
 
+// Addr 返回服务器监听的地址
+func (server *TCPServer) Addr() string {
+	return fmt.Sprintf("%s:%d", server.listenAddr, server.listenPort)
+}
+
 func (server *TCPServer) makeSession(conn net.Conn) (session *Session) {
 	session = newSession(conn)
 
