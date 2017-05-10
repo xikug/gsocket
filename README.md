@@ -5,6 +5,8 @@
 go get github.com/xikug/gsocket
 
 # 使用
+```go
+
 package main
 
 import (
@@ -59,3 +61,4 @@ func pause() {
 	r := bufio.NewReader(os.Stdin)
 	r.ReadByte()
 }
+```
