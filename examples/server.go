@@ -32,8 +32,9 @@ func (server demoServer) OnError(session *gsocket.Session, err error) {
 
 func main() {
 	demoServer := &demoServer{}
+	//CreateTCPServer 的handler可以传nil
 	server := gsocket.CreateTCPServer("0.0.0.0", 9595,
-		demoServer, demoServer, demoServer, demoServer)
+		demoServer.OnConnect, demoServer.OnDisconnect, demoServer.OnRecv, demoServer.OnError)
 
 	err := server.Start()
 	if err != nil {
@@ -41,7 +42,7 @@ func main() {
 		return
 	}
 
-	log.Printf("Listening %s...", server.FuckAddr())
+	log.Printf("Listening %s...", server.Addr())
 
 	pause()
 }

@@ -118,27 +118,27 @@ func (server *TCPServer) makeSession(conn net.Conn) (session *Session) {
 func (server *TCPServer) processConnect(session *Session) {
 	log.Printf("ACCEPTED: %s\n", session.RemoteAddr())
 	if server.userHandler.handlerConnect != nil {
-		server.userHandler.handlerConnect.OnConnect(session)
+		server.userHandler.handlerConnect(session)
 	}
 }
 
 func (server *TCPServer) processDisconnect(session *Session) {
 	log.Printf("CONNECTION CLOSED: %s\n", session.RemoteAddr())
 	if server.userHandler.handlerDisconnect != nil {
-		server.userHandler.handlerDisconnect.OnDisconnect(session)
+		server.userHandler.handlerDisconnect(session)
 	}
 }
 
 func (server *TCPServer) processRecv(session *Session, data []byte) {
 	log.Printf("DATA RECVED: %x\n", data)
 	if server.userHandler.handlerRecv != nil {
-		server.userHandler.handlerRecv.OnRecv(session, data)
+		server.userHandler.handlerRecv(session, data)
 	}
 }
 
 func (server *TCPServer) processError(session *Session, err error) {
 	log.Printf("ERROR: %s\n", err.Error())
 	if server.userHandler.handlerError != nil {
-		server.userHandler.handlerError.OnError(session, err)
+		server.userHandler.handlerError(session, err)
 	}
 }

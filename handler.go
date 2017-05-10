@@ -1,17 +1,13 @@
 package gsocket
 
-type TCPConnectHandler interface {
-	OnConnect(session *Session)
-}
+// TCPConnectHandler 连接事件
+type TCPConnectHandler func(session *Session)
 
-type TCPDisconnectHandler interface {
-	OnDisconnect(session *Session)
-}
+// TCPDisconnectHandler 断开连接事件
+type TCPDisconnectHandler func(session *Session)
 
-type TCPRecvHandler interface {
-	OnRecv(session *Session, data []byte)
-}
+// TCPRecvHandler 收到数据事件
+type TCPRecvHandler func(session *Session, data []byte)
 
-type TCPErrorHandler interface {
-	OnError(session *Session, err error)
-}
+// TCPErrorHandler 有错误发生
+type TCPErrorHandler func(session *Session, err error)
