@@ -42,6 +42,9 @@ func (session *Session) recvThread(wg *sync.WaitGroup, handler tcpEventHandler) 
 		n, err := session.connection.Read(buffer)
 		if err != nil {
 			session.Close()
+			if handler.handlerDisconnect != nil {
+				handler.handlerDisconnect(session)
+			}
 			break
 		}
 
