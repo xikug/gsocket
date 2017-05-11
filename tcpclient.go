@@ -64,6 +64,9 @@ func (client *TCPClient) Send(data []byte) {
 func (client *TCPClient) Close() {
 	client.session.Close()
 	client.wg.Wait()
+	if client.userHandler.handlerDisconnect != nil {
+		client.userHandler.handlerDisconnect(client.session)
+	}
 }
 
 // RemoteAddr 返回服务器地址
