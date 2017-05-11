@@ -65,3 +65,13 @@ func (client *TCPClient) Close() {
 	client.session.Close()
 	client.wg.Wait()
 }
+
+// RemoteAddr 返回服务器地址
+func (client *TCPClient) RemoteAddr() string {
+	return fmt.Sprintf("%s:%d", client.tcpClientState.remoteAddr, client.tcpClientState.remotePort)
+}
+
+// LocalAddr 返回本机的连接地址
+func (client *TCPClient) LocalAddr() string {
+	return client.session.connection.LocalAddr().String()
+}
