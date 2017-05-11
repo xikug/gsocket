@@ -11,3 +11,10 @@ type TCPRecvHandler func(session *Session, data []byte)
 
 // TCPErrorHandler 有错误发生
 type TCPErrorHandler func(session *Session, err error)
+
+type tcpEventHandler struct {
+	handlerConnect    TCPConnectHandler
+	handlerDisconnect TCPDisconnectHandler
+	handlerRecv       TCPRecvHandler
+	handlerError      TCPErrorHandler
+}

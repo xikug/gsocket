@@ -3,6 +3,7 @@ package gsocket
 import (
 	"log"
 	"net"
+	"sync"
 )
 
 // Session 代表一个连接会话
@@ -34,8 +35,8 @@ func (session *Session) Close() {
 	session.connection.Close()
 }
 
-func (session *Session) recvThread(server *TCPServer) {
-	defer server.wg.Done()
+func (session *Session) recvThread(wg *sync.WaitGroup, handler tcpEventHandler) {
+	defer wg.Done()
 	buffer := make([]byte, 4096)
 	for {
 		n, err := session.connection.Read(buffer)
@@ -44,16 +45,16 @@ func (session *Session) recvThread(server *TCPServer) {
 		}
 
 		//session.RecvedPackets = append(session.RecvedPackets, buffer[:n]...)
-		if server.userHandler.handlerRecv != nil {
-			server.userHandler.handlerRecv(session, buffer[:n])
+		if handler.handlerRecv != nil {
+			handler.handlerRecv(session, buffer[:n])
 		}
 	}
 
 	log.Printf("session %s recvThread Exit", session.RemoteAddr())
 }
 
-func (session *Session) sendThread(server *TCPServer) {
-	defer server.wg.Done()
+func (session *Session) sendThread(wg *sync.WaitGroup) {
+	defer wg.Done()
 
 	for {
 		packet, ok := <-session.sendBuffer

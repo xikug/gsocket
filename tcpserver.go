@@ -10,19 +10,11 @@ import (
 // TCPServer 描述一个TCP服务器的结构
 type TCPServer struct {
 	tcpServerState
-	userHandler   eventHandler       // 用户的事件处理Handler
-	connectionMax int                // 最大连接数，为0则不限制服务器最大连接数
-	listener      net.Listener       // 监听句柄
-	terminated    bool               // 通知是否停止Service
-	wg            sync.WaitGroup     // 等待所有goroutine结束
-	sessions      map[uint64]Session // 会话
-}
-
-type eventHandler struct {
-	handlerConnect    TCPConnectHandler
-	handlerDisconnect TCPDisconnectHandler
-	handlerRecv       TCPRecvHandler
-	handlerError      TCPErrorHandler
+	userHandler   tcpEventHandler // 用户的事件处理Handler
+	connectionMax int             // 最大连接数，为0则不限制服务器最大连接数
+	listener      net.Listener    // 监听句柄
+	terminated    bool            // 通知是否停止Service
+	wg            sync.WaitGroup  // 等待所有goroutine结束
 }
 
 type tcpServerState struct {
@@ -40,7 +32,7 @@ func CreateTCPServer(addr string, port uint16, handlerConnect TCPConnectHandler,
 			listenPort:      port,
 			connectionCount: 0,
 		},
-		userHandler: eventHandler{
+		userHandler: tcpEventHandler{
 			handlerConnect:    handlerConnect,
 			handlerDisconnect: handlerDisconnect,
 			handlerRecv:       handlerRecv,
@@ -109,8 +101,8 @@ func (server *TCPServer) makeSession(conn net.Conn) (session *Session) {
 	session = newSession(conn)
 
 	server.wg.Add(2)
-	go session.recvThread(server)
-	go session.sendThread(server)
+	go session.recvThread(&server.wg, server.userHandler)
+	go session.sendThread(&server.wg)
 
 	return session
 }
