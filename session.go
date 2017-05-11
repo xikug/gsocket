@@ -63,7 +63,9 @@ func (session *Session) recvThread(wg *sync.WaitGroup, handler tcpEventHandler) 
 		}
 	}
 
-	session.Close()
+	if session.terminated == false {
+		session.Close()
+	}
 	log.Printf("session %s recvThread Exit", session.RemoteAddr())
 }
 
