@@ -46,8 +46,6 @@ func main() {
 	log.Printf("Listening %s...\n", server.Addr())
 
 	pause()
-
-	client.Close()
 }
 
 func pause() {

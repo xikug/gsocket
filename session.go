@@ -1,6 +1,7 @@
 package gsocket
 
 import (
+	"io"
 	"log"
 	"net"
 	"sync"
@@ -41,7 +42,15 @@ func (session *Session) recvThread(wg *sync.WaitGroup, handler tcpEventHandler) 
 	for {
 		n, err := session.connection.Read(buffer)
 		if err != nil {
-			session.Close()
+			if err != io.EOF {
+				if handler.handlerError != nil {
+					handler.handlerError(session, err)
+				}
+				session.Close()
+
+				break
+			}
+
 			if handler.handlerDisconnect != nil {
 				handler.handlerDisconnect(session)
 			}

@@ -42,6 +42,7 @@ func main() {
 	client.Send([]byte("Hello World!!!"))
 
 	pause()
+	client.Close()
 }
 
 func pause() {
