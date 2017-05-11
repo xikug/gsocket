@@ -32,6 +32,7 @@ func (session *Session) RemoteAddr() string {
 
 // Close 关闭Session
 func (session *Session) Close() {
+	session.terminated = true
 	close(session.sendBuffer)
 	session.connection.Close()
 }
@@ -46,7 +47,6 @@ func (session *Session) recvThread(wg *sync.WaitGroup, handler tcpEventHandler) 
 				if handler.handlerError != nil {
 					handler.handlerError(session, err)
 				}
-				session.Close()
 
 				break
 			}
@@ -63,6 +63,7 @@ func (session *Session) recvThread(wg *sync.WaitGroup, handler tcpEventHandler) 
 		}
 	}
 
+	session.Close()
 	log.Printf("session %s recvThread Exit", session.RemoteAddr())
 }
 
