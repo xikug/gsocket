@@ -20,6 +20,7 @@ func (client *demoClient) OnDisconnect(session *gsocket.Session) {
 
 func (client *demoClient) OnRecv(session *gsocket.Session, data []byte) {
 	log.Printf("DATA RECVED: %s %d - %v\n", session.RemoteAddr(), len(data), data)
+	session.Send()
 }
 
 func (client *demoClient) OnError(session *gsocket.Session, err error) {

@@ -72,6 +72,6 @@ func (session *Session) sendThread(wg *sync.WaitGroup) {
 }
 
 // Send 发送数据
-func (session *Session) Send(packet []byte) {
-	session.sendBuffer <- packet
+func (session *Session) Send(data []byte) {
+	session.sendBuffer <- data
 }
