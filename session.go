@@ -41,6 +41,7 @@ func (session *Session) recvThread(wg *sync.WaitGroup, handler tcpEventHandler) 
 	for {
 		n, err := session.connection.Read(buffer)
 		if err != nil {
+			session.Close()
 			break
 		}
 
