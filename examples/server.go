@@ -23,7 +23,7 @@ func (server demoServer) OnDisconnect(c *gsocket.Connection) {
 // OnRecv 收到客户端发来的数据
 func (server demoServer) OnRecv(c *gsocket.Connection, data []byte) {
 	log.Printf("DATA RECVED: %s %d - %v\n", c.RemoteAddr(), len(data), data)
-	session.Send(data)
+	c.Send(data)
 }
 
 // OnError 有错误发生
