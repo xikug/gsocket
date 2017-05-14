@@ -7,17 +7,17 @@ import (
 	"sync"
 )
 
-// Session 代表一个连接会话
-type Session struct {
-	connection net.Conn
+// Connection 代表一个连接会话
+type Connection struct {
+	conn       net.Conn
 	sendBuffer chan []byte
 	terminated bool
 }
 
-// NewSession 生成一个新的Session
-func newSession(conn net.Conn) (session *Session) {
-	session = &Session{
-		connection: conn,
+// newConnection 生成一个新的Session
+func newConnection(conn net.Conn) (session *Connection) {
+	session = &Connection{
+		conn:       conn,
 		sendBuffer: make(chan []byte, 10),
 		terminated: false,
 	}
@@ -26,22 +26,22 @@ func newSession(conn net.Conn) (session *Session) {
 }
 
 // RemoteAddr 返回客户端的地址和端口
-func (session *Session) RemoteAddr() string {
-	return session.connection.RemoteAddr().String()
+func (session *Connection) RemoteAddr() string {
+	return session.conn.RemoteAddr().String()
 }
 
 // Close 关闭Session
-func (session *Session) Close() {
+func (session *Connection) Close() {
 	session.terminated = true
 	close(session.sendBuffer)
-	session.connection.Close()
+	session.conn.Close()
 }
 
-func (session *Session) recvThread(wg *sync.WaitGroup, handler tcpEventHandler) {
+func (session *Connection) recvThread(wg *sync.WaitGroup, handler tcpEventHandler) {
 	defer wg.Done()
 	buffer := make([]byte, 4096)
 	for {
-		n, err := session.connection.Read(buffer)
+		n, err := session.conn.Read(buffer)
 		if err != nil {
 			if err != io.EOF {
 				if handler.handlerError != nil {
@@ -69,7 +69,7 @@ func (session *Session) recvThread(wg *sync.WaitGroup, handler tcpEventHandler) 
 	log.Printf("session %s recvThread Exit", session.RemoteAddr())
 }
 
-func (session *Session) sendThread(wg *sync.WaitGroup) {
+func (session *Connection) sendThread(wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	for {
@@ -78,7 +78,7 @@ func (session *Session) sendThread(wg *sync.WaitGroup) {
 			// 意味着道通已经空了，并且已被关闭
 			break
 		}
-		_, err := session.connection.Write(packet)
+		_, err := session.conn.Write(packet)
 		if err != nil {
 			break
 		}
@@ -88,6 +88,6 @@ func (session *Session) sendThread(wg *sync.WaitGroup) {
 }
 
 // Send 发送数据
-func (session *Session) Send(data []byte) {
+func (session *Connection) Send(data []byte) {
 	session.sendBuffer <- data
 }

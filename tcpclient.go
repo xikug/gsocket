@@ -9,7 +9,7 @@ import (
 // TCPClient TCP客户端描述
 type TCPClient struct {
 	tcpClientState
-	session     *Session
+	session     *Connection
 	userHandler tcpEventHandler
 	wg          sync.WaitGroup
 }
@@ -41,7 +41,7 @@ func (client *TCPClient) Connect(addr string, port uint16) error {
 	if err != nil {
 		return err
 	}
-	client.session = newSession(conn)
+	client.session = newConnection(conn)
 
 	client.tcpClientState = tcpClientState{
 		remoteAddr: addr,
@@ -76,5 +76,5 @@ func (client *TCPClient) RemoteAddr() string {
 
 // LocalAddr 返回本机的连接地址
 func (client *TCPClient) LocalAddr() string {
-	return client.session.connection.LocalAddr().String()
+	return client.session.conn.LocalAddr().String()
 }
