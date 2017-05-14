@@ -48,20 +48,20 @@ func (c *Connection) recvThread(wg *sync.WaitGroup, handler tcpEventHandler) {
 	for {
 		n, err := c.conn.Read(buffer)
 		if err != nil {
+			if c.terminated {
+				// 直接退出
+				break
+			}
 			if err != io.EOF {
 				if handler.handlerError != nil {
-					log.Println(err)
 					handler.handlerError(c, err)
 				}
-				log.Println("handler read break 1")
 				break
 			}
 
 			if handler.handlerDisconnect != nil {
-				log.Println("没有break")
 				handler.handlerDisconnect(c)
 			}
-			log.Println("handler read break 2")
 			break
 		}
 
