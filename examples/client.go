@@ -10,20 +10,20 @@ import (
 
 type demoClient struct{}
 
-func (client *demoClient) OnConnect(session *gsocket.Session) {
-	log.Printf("CONNECTED: %s\n", session.RemoteAddr())
+func (client *demoClient) OnConnect(c *gsocket.Connection) {
+	log.Printf("CONNECTED: %s\n", c.RemoteAddr())
 }
 
-func (client *demoClient) OnDisconnect(session *gsocket.Session) {
-	log.Printf("DISCONNECTED: %s\n", session.RemoteAddr())
+func (client *demoClient) OnDisconnect(c *gsocket.Connection) {
+	log.Printf("DISCONNECTED: %s\n", c.RemoteAddr())
 }
 
-func (client *demoClient) OnRecv(session *gsocket.Session, data []byte) {
-	log.Printf("DATA RECVED: %s %d - %v\n", session.RemoteAddr(), len(data), data)
+func (client *demoClient) OnRecv(c *gsocket.Connection, data []byte) {
+	log.Printf("DATA RECVED: %s %d - %v\n", c.RemoteAddr(), len(data), data)
 }
 
-func (client *demoClient) OnError(session *gsocket.Session, err error) {
-	log.Printf("ERROR: %s - %s\n", session.RemoteAddr(), err.Error())
+func (client *demoClient) OnError(c *gsocket.Connection, err error) {
+	log.Printf("ERROR: %s - %s\n", c.RemoteAddr(), err.Error())
 }
 
 func main() {

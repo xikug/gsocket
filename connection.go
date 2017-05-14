@@ -15,79 +15,79 @@ type Connection struct {
 }
 
 // newConnection 生成一个新的Session
-func newConnection(conn net.Conn) (session *Connection) {
-	session = &Connection{
+func newConnection(conn net.Conn) (c *Connection) {
+	c = &Connection{
 		conn:       conn,
 		sendBuffer: make(chan []byte, 10),
 		terminated: false,
 	}
 
-	return session
+	return c
 }
 
 // RemoteAddr 返回客户端的地址和端口
-func (session *Connection) RemoteAddr() string {
-	return session.conn.RemoteAddr().String()
+func (c *Connection) RemoteAddr() string {
+	return c.conn.RemoteAddr().String()
 }
 
-// Close 关闭Session
-func (session *Connection) Close() {
-	session.terminated = true
-	close(session.sendBuffer)
-	session.conn.Close()
+// Close 关闭连接
+func (c *Connection) Close() {
+	c.terminated = true
+	close(c.sendBuffer)
+	c.conn.Close()
 }
 
-func (session *Connection) recvThread(wg *sync.WaitGroup, handler tcpEventHandler) {
+func (c *Connection) recvThread(wg *sync.WaitGroup, handler tcpEventHandler) {
 	defer wg.Done()
 	buffer := make([]byte, 4096)
 	for {
-		n, err := session.conn.Read(buffer)
+		n, err := c.conn.Read(buffer)
 		if err != nil {
 			if err != io.EOF {
 				if handler.handlerError != nil {
-					handler.handlerError(session, err)
+					handler.handlerError(c, err)
 				}
 
 				break
 			}
 
 			if handler.handlerDisconnect != nil {
-				handler.handlerDisconnect(session)
+				handler.handlerDisconnect(c)
 			}
 			break
 		}
 
 		//session.RecvedPackets = append(session.RecvedPackets, buffer[:n]...)
 		if handler.handlerRecv != nil {
-			handler.handlerRecv(session, buffer[:n])
+			handler.handlerRecv(c, buffer[:n])
 		}
 	}
 
-	if session.terminated == false {
-		session.Close()
+	if c.terminated == false {
+		c.Close()
 	}
-	log.Printf("session %s recvThread Exit", session.RemoteAddr())
+	log.Printf("session %s recvThread Exit", c.RemoteAddr())
 }
 
-func (session *Connection) sendThread(wg *sync.WaitGroup) {
+func (c *Connection) sendThread(wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	for {
-		packet, ok := <-session.sendBuffer
+		packet, ok := <-c.sendBuffer
 		if !ok {
 			// 意味着道通已经空了，并且已被关闭
 			break
 		}
-		_, err := session.conn.Write(packet)
+		_, err := c.conn.Write(packet)
 		if err != nil {
 			break
 		}
 	}
 
-	log.Printf("session %s sendThread Exit", session.RemoteAddr())
+	log.Printf("session %s sendThread Exit", c.RemoteAddr())
 }
 
 // Send 发送数据
-func (session *Connection) Send(data []byte) {
-	session.sendBuffer <- data
+func (c *Connection) Send(data []byte) {
+	c.sendBuffer <- data
 }

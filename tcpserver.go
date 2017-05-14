@@ -107,30 +107,30 @@ func (server *TCPServer) makeSession(conn net.Conn) (session *Connection) {
 	return session
 }
 
-func (server *TCPServer) processConnect(session *Connection) {
-	log.Printf("ACCEPTED: %s\n", session.RemoteAddr())
+func (server *TCPServer) processConnect(c *Connection) {
+	log.Printf("ACCEPTED: %s\n", c.RemoteAddr())
 	if server.userHandler.handlerConnect != nil {
-		server.userHandler.handlerConnect(session)
+		server.userHandler.handlerConnect(c)
 	}
 }
 
-func (server *TCPServer) processDisconnect(session *Connection) {
-	log.Printf("CONNECTION CLOSED: %s\n", session.RemoteAddr())
+func (server *TCPServer) processDisconnect(c *Connection) {
+	log.Printf("CONNECTION CLOSED: %s\n", c.RemoteAddr())
 	if server.userHandler.handlerDisconnect != nil {
-		server.userHandler.handlerDisconnect(session)
+		server.userHandler.handlerDisconnect(c)
 	}
 }
 
-func (server *TCPServer) processRecv(session *Connection, data []byte) {
+func (server *TCPServer) processRecv(c *Connection, data []byte) {
 	log.Printf("DATA RECVED: %x\n", data)
 	if server.userHandler.handlerRecv != nil {
-		server.userHandler.handlerRecv(session, data)
+		server.userHandler.handlerRecv(c, data)
 	}
 }
 
-func (server *TCPServer) processError(session *Connection, err error) {
+func (server *TCPServer) processError(c *Connection, err error) {
 	log.Printf("ERROR: %s\n", err.Error())
 	if server.userHandler.handlerError != nil {
-		server.userHandler.handlerError(session, err)
+		server.userHandler.handlerError(c, err)
 	}
 }

@@ -11,24 +11,24 @@ import (
 type demoServer struct{}
 
 // OnConnect 客户端连接事件
-func (server demoServer) OnConnect(session *gsocket.Session) {
-	log.Printf("CONNECTED: %s\n", session.RemoteAddr())
+func (server demoServer) OnConnect(c *gsocket.Connection) {
+	log.Printf("CONNECTED: %s\n", c.RemoteAddr())
 }
 
 // OnDisconnect 客户端断开连接事件
-func (server demoServer) OnDisconnect(session *gsocket.Session) {
-	log.Printf("DISCONNECTED: %s\n", session.RemoteAddr())
+func (server demoServer) OnDisconnect(c *gsocket.Connection) {
+	log.Printf("DISCONNECTED: %s\n", c.RemoteAddr())
 }
 
 // OnRecv 收到客户端发来的数据
-func (server demoServer) OnRecv(session *gsocket.Session, data []byte) {
-	log.Printf("DATA RECVED: %s %d - %v\n", session.RemoteAddr(), len(data), data)
+func (server demoServer) OnRecv(c *gsocket.Connection, data []byte) {
+	log.Printf("DATA RECVED: %s %d - %v\n", c.RemoteAddr(), len(data), data)
 	session.Send(data)
 }
 
 // OnError 有错误发生
-func (server demoServer) OnError(session *gsocket.Session, err error) {
-	log.Printf("ERROR: %s - %s\n", session.RemoteAddr(), err.Error())
+func (server demoServer) OnError(c *gsocket.Connection, err error) {
+	log.Printf("ERROR: %s - %s\n", c.RemoteAddr(), err.Error())
 }
 
 func main() {
