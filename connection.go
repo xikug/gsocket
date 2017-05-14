@@ -50,7 +50,7 @@ func (c *Connection) recvThread(wg *sync.WaitGroup, handler tcpEventHandler) {
 		if err != nil {
 			if err != io.EOF {
 				if handler.handlerError != nil {
-					log.Printf("handler error: %s\n", c.LocalAddr())
+					log.Printf("handler error: %v\n", err)
 					handler.handlerError(c, err)
 				}
 				log.Println("handler read break 1")
