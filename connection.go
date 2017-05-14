@@ -30,6 +30,11 @@ func (c *Connection) RemoteAddr() string {
 	return c.conn.RemoteAddr().String()
 }
 
+// LocalAddr 返回本机地址和端口
+func (c *Connection) LocalAddr() string {
+	return c.conn.LocalAddr().String()
+}
+
 // Close 关闭连接
 func (c *Connection) Close() {
 	c.terminated = true
@@ -45,15 +50,17 @@ func (c *Connection) recvThread(wg *sync.WaitGroup, handler tcpEventHandler) {
 		if err != nil {
 			if err != io.EOF {
 				if handler.handlerError != nil {
+					log.Printf("handler error: %s\n", c.LocalAddr())
 					handler.handlerError(c, err)
 				}
-
+				log.Println("handler read break 1")
 				break
 			}
 
 			if handler.handlerDisconnect != nil {
 				handler.handlerDisconnect(c)
 			}
+			log.Println("handler read break 2")
 			break
 		}
 
